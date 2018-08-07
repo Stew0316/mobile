@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+
+        .clearfix:before,
+        .clearfix:after {
+            content: "";
+            display: table;
+        }
+
+        .clearfix:after {
+            clear: both;
+            overflow: hidden;
+        }
+        /* ul {
+            width: 100%;
+            height: auto;
+        }
+
+        li {
+            list-style: none;
+            width: 130px;
+            height: 130px;
+            background: pink;
+            float: left;
+            margin: 10px;
+        } */
+        .con{
+            background:#00f;line-height:50px;position:absolute;left:0;top:0;width:100%;
+            transition:left .5s;
+        }
+        .con_active{
+            left:-50px;
+        }
+        .del{
+            background:#f00;line-height:50px;position:absolute;right:-50px;top:0;width:50px;
+            transition:right .5s;
+        }
+        .del_active{
+            right:0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <ul class="clearfix" id="list-group">
+
+    </ul> -->
+    <div id="main" style="position:relative;height:50px;color:#fff;overflow: hidden;text-align: center;">
+        <div id="con" class="con">
+            内容
+        </div>
+        <div class="del" id="del">
+            删除
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    // function createLi(num) {
+    //     var ulDom = document.getElementById("list-group");
+    //     //每次创建num个
+    //     for (var i = 0; i < num; i++) {
+    //         var liDom = document.createElement("li");
+    //         liDom.innerHTML = i;
+    //         ulDom.appendChild(liDom);
+    //     }
+    // }
+    // createLi(10);
+    // //获取屏幕高度
+    // var maxHeight = document.documentElement.clientHeight;
+    // window.onscroll = function() {
+    //     //获取最后一个元素距离顶部的高度
+    //     var liDomHeight = document.getElementById("list-group").lastChild.offsetTop;
+    //     var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    //     //当最后一个距离顶部的距离小于屏幕的高度+滚动条的高度就加载数据
+    //     if (liDomHeight < (maxHeight + scrollTop)) {
+    //         createLi(10);
+    //     }
+    // }
+    var con=document.getElementById('con');
+    var del=document.getElementById("del");
+    var main=document.getElementById("main");
+    var startX,endX;
+    con.ontouchstart=function(e){
+        startX=e.touches[0].pageX;
+    }
+    con.ontouchmove=function(e){
+        endX=e.touches[0].pageX
+    }
+    con.ontouchend=function(e){
+        if(startX>endX){
+            console.log("左");
+            e.target.classList.add('con_active')
+            del.classList.add('del_active')
+        }else{
+            console.log("右");
+            e.target.classList.remove('con_active')
+            del.classList.remove('del_active')
+        }
+        // console.log(e.touches[0].pageX);
+        // endX=e.touches[0].pageX;
+
+    }
+    del.onclick=function(){
+        main.parentNode.removeChild(main)
+    }
+</script>
+
+</html>
