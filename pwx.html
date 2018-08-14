@@ -1,94 +1,152 @@
-<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page Title</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+    </head>
+    <body>
     <style>
-        *{
-            margin:0;
-            padding:0;
-        }
-        ul{
-            overflow-y:scroll;
-        }
-        ul li{
-            height:50px;
-            background:	#B0E0E6;
-            position: relative;
-            border-bottom:1px solid #ccc;
-        }
-        ul li span{
+            h1:hover{
+                color:blue;
+            }
+        .target,.origin,.task-guide,.parabola-el,.origin1{
             position: absolute;
-            width:20px;
+            background-color: red;
+            width: 20px;
             height:20px;
-            right: 20px;
-            bottom:10px;
-            display: block;
-            border-radius:50%;
-            background:	#808000;
+            border-radius: 50%;
         }
-        div{
-            position: fixed;
-            left:0;
-            bottom:0;
-            width:100%;
-            line-height:50px;
-            border-top:1px solid #ccc;
+        .task-guide{
+            background-color: blue;
+        }
+        .target{
+            position: absolute;
+            left: 20px;
+            /* top:300px; */
+            bottom:20px;
+        }
+        .origin{
+            position: absolute;
+            right: 10px;
+            top: 300px;
+            background-color: blue;
+        }
+        .parabola-el{
+            top: -1000px;
+            background-color: green;
+        }
+        .origin1 {
+            position: absolute;
+            right: 10px;
+            top: 400px;
+            background-color: #000;
         }
     </style>
-</head>
-<body>
-    <ul>
-        <li>
-            <span class="test"></span>
-        </li>
-        <li>
-            <span class="test"></span>
-        </li>
-    </ul>
-    <div class="accept">
-        接受内容
-    </div>
+        <h1>
+            点击黑球或者篮球出现意想不到的效果
+        </h1>
+    <div class="target"></div>
+    <div class="origin" onclick="onClick(this)"></div>
+    <div class="origin1" onclick="onClick(this)"></div>
     <script type="text/javascript">
-        var sp=document.getElementsByClassName('test');
-        var acc=document.getElementsByClassName('accept');
-        var scrX=window.screen.width;
-        var scrY=window.screen.height;
-        console.log(acc);
+    var parabola = function(config){
+        var b = 0,
+            INTERVAL = 15,
+            timer = null,
+            x1,y1,x2,y2,originx,originy,diffx,diffy;
 
-        console.log(acc[0].offsetTop,acc[0].offsetLeft);
-        //616,15 y=-x*2+3x
-        for (let i=0;i<sp.length;i++){
-            sp[i].onclick=function(e){
-                var span = this.cloneNode(true);
-                this.parentElement.appendChild(span);
-                console.log(this.offsetLeft);
-                console.log(e.pageX,e.pageY,e);
-                var speedX;
-                var sppedY;
-                var x=acc[0].offsetLeft-this.offsetLeft;
-                var y=scrY-e.pageY-16;
-                speedX=parseFloat(x/50);
-                speedY=parseFloat(y/50);
-                console.log(x,y);
 
-                var time=setInterval(function(){
-                    // span.style.left
-                    // span.style.right-=x;
-                    // if(span.style.right<=0){
-                    //     clearInterval(time)
-                    // }
-                    // console.log(111);
+        this.config = config || {};
+        // 起点
+        this.origin =  this.config.origin||null;
+        // 终点
+        this.target = document.getElementsByClassName(this.config.target)[0]||null;
+        // 运动的元素
+        this.element = document.getElementsByClassName(this.config.element)[0]||null;
+        // 曲线弧度
+        this.a = this.config.a || 0.002;
+        // 运动时间(ms)
+        this.time = this.config.time || 1000;
 
-                },20)
-                //删除span
-                // span.style.right=
-                // span.parentNode.removeChild(span)
-            }
+
+        this.init = function(){
+            console.log(this.origin)
+            x1 = this.origin.offsetLeft;
+            y1 = this.origin.offsetTop;
+            x2 = this.target.offsetLeft;
+            y2 = this.target.offsetTop;
+            originx = x1;
+            originy = y1;
+            diffx = x2-x1;
+            diffy = y2-y1,
+            speedx = diffx/this.time;
+            b = (diffy - this.a*diffx*diffx)/diffx;
+            console.log(x1,y1)
+            this.element.style.left = x1;
+            this.element.style.top = y1;
+            return this;
         }
 
+
+        // 确定动画方式
+        this.moveStyle = function(){
+            var moveStyle = 'position',
+                testDiv = document.createElement('div');
+            if('placeholder' in testDiv){
+                ['','ms','moz','webkit'].forEach(function(pre){
+                    var transform = pre + (pre ? 'T' : 't') + 'ransform';
+                    if(transform in testDiv.style){
+                        moveStyle = transform;
+                    }
+                })
+            }
+            return moveStyle;
+        }
+
+
+        this.move = function(){
+            var start = new Date().getTime(),
+                moveStyle = this.moveStyle(),
+                _this = this;
+            timer = setInterval(function(){
+                if(new Date().getTime() - start > _this.time){
+                    clearInterval(timer);
+                     _this.element.style.left = x2;
+                    _this.element.style.top = y2;
+                    typeof _this.config.callback === 'function' && _this.config.callback(_this.element);
+                    return;
+                }
+                x = speedx * (new Date().getTime() - start);
+                y = _this.a*x*x + b*x;
+                if(moveStyle === 'position'){
+                    _this.element.style.left = x+originx;
+                    _this.element.style.top = y+originy;
+                }else{
+                    if(window.requestAnimationFrame){
+                        window.requestAnimationFrame(_this.element[0].style[moveStyle] = 'translate('+x+'px,'+y+'px)');
+                    }else{
+                        _this.element[0].style[moveStyle] = 'translate('+x+'px,'+y+'px)';
+                    }
+                }
+            },INTERVAL)
+            return this;
+        }
+
+
+        this.init();
+    }
+
+
+    function onClick(element){
+        var el = document.createElement('div');
+        el.setAttribute("class","parabola-el")
+        document.body.appendChild(el);
+        new parabola({
+            origin: element,
+            target: 'target',
+            element: 'parabola-el',
+                    time: 1000,
+            callback: function(el){
+                el.remove();
+            }
+        }).move()
+    }
     </script>
-</body>
-</html>
+</body></html>
