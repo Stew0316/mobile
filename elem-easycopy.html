@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        *{
+            margin:0;padding:0;
+
+        }
+        #app{
+            display: flex;
+        }
+        ul{
+            width:100px;
+            text-align: center;
+            line-height: 35px;
+        }
+        section{
+            flex: 1;
+            height:400px;
+            overflow-y:scroll;
+            border-bottom:1px solid #ccc
+        }
+        .right div{
+            height:300px;
+        }
+        .active{
+            background: #00FFFF;
+        }
+    </style>
+</head>
+<body>
+    <div style="height:200px;background:#00f;"></div>
+    <div id="app">
+        <ul>
+            <li :class="{'active':mark==index}" @click="scrollTo(list,index)" v-for="(list,index) in nav_loop">{{list}}</li>
+        </ul>
+        <section>
+            <div class="right" v-for="item in goods_list">
+                <p class="title">{{item.title}}</p>
+                <div>{{item.cont}}</div>
+            </div>
+        </section>
+    </div>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script type="text/javascript">
+        let section=document.getElementsByTagName('section');
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                mark:0,
+                nav_loop:['31312','1234123','vadva','321321321'],
+                goods_list:[
+                    {title:'这是热销',cont:'1111'},
+                    {title:'这是精品',cont:'2222'},
+                    {title:'这是五宝粥',cont:'2222'},
+                    {title:'这是六宝粥',cont:'2222'},
+                ]
+            },
+            methods:{
+                scrollTo(list,index){
+                    this.mark=index;
+                    let store=document.getElementsByClassName('right');
+                    // jquery实现
+                    $("section").animate({
+                        scrollTop: store[index].offsetTop-200
+                    }, "slow");
+                },
+                handleScroll () {
+                    let top=section[0].scrollTop;
+                    let tit=document.getElementsByClassName('right');
+                    for (let i=0;i<this.goods_list.length;i++){
+                        // console.log(tit[i].offsetTop-200);
+                        //top大于等于tit[i]小于tit[i+1]，注意最后一个的处理
+                        // if(top>=(tit[i].offsetTop-200)&&top<tit[i+1].)
+
+                    }
+                    // console.log(top)
+                },
+            },
+            mounted:function(){
+                section[0].addEventListener('scroll', this.handleScroll)
+            }
+        })
+    </script>
+</body>
+</html>
